@@ -1,3 +1,5 @@
+// notes are for my own knowledge
+// route will listen for this like a receptionist
 import express from 'express';
 import {
     createBranch,
