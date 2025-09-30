@@ -30,6 +30,7 @@ export const createEmployee = (data: {
     employees.push(newEmployee);
     return newEmployee;
 }
+// array isnt further used, its saved in memory only.
 
 // Update an existing employee
 export const updateEmployee = (id: number, data: {
