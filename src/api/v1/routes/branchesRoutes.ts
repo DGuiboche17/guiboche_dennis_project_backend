@@ -8,7 +8,7 @@ import {
     updateBranch,
     deleteBranch,
 
-} from "../controllers/branchesController";
+} from "../controllers/branchesControllers";
 
 const router = express.Router();
 
@@ -17,3 +17,5 @@ router.get('/', getAllBranches);
 router.get('/:id', getBranchById);
 router.put('/:id', updateBranch);
 router.delete('/:id', deleteBranch);  
+
+export default router;

@@ -1,8 +1,7 @@
-
 //  Service layer for managing employees.
 //  Provides functions that will create read, update and delete employees
 
-import { Employee, employees, } from "src/data/employees";  
+import { Employee, employees, } from "../../../data/employees";
 
 // Get all employees
 export const getAllEmployees = (): Employee[] => {

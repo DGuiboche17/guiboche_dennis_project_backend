@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import * as employeeService from "../services/employeeService";
 
-
 // Create a new employee
 export const createEmployee = (req: Request, res: Response): void => {
   const {
