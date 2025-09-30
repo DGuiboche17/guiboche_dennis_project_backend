@@ -7,7 +7,6 @@ import employeeRoutes from './api/v1/routes/employeeRoutes';
 import branchRoutes from './api/v1/routes/branchesRoutes';
 
 const app: Express = express();
-const port = 3000;
 
 // Middleware
 app.use(express.json());
@@ -28,8 +27,4 @@ app.use('/api/v1/routes', basicRoute);
 app.use('/api/v1/employees', employeeRoutes); 
 app.use('/api/v1/branches', branchRoutes); 
  
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
 export default app;
