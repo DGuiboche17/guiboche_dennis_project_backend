@@ -6,12 +6,16 @@ jest.mock('../src/api/v1/controllers/employeesControllers', () => {
     getEmployeeById: jest.fn((_req, res) => res.status(200).json({ message: 'mocked getById' })),
     updateEmployee: jest.fn((_req, res) => res.status(200).json({ message: 'mocked update' })),
     deleteEmployee: jest.fn((_req, res) => res.status(204).json({ message: 'mocked delete' })),
+    getEmployeesByBranch: jest.fn((_req, res) => res.status(200).json({ message: 'mocked getByBranch' })),
+    getEmployeesByDepartment: jest.fn((_req, res) => res.status(200).json({ message: 'mocked getByDepartment' })),
   };
 });
 
 import request from 'supertest';
 import app from '../src/app';
 import * as employeesController from '../src/api/v1/controllers/employeesControllers';
+
+
 
 describe('Employee Routes', () => {
   beforeEach(() => {
@@ -53,5 +57,15 @@ describe('Employee Routes', () => {
   it('should call deleteEmployee on DELETE /api/v1/employees/:id', async () => {
     await request(app).delete('/api/v1/employees/1');
     expect(employeesController.deleteEmployee).toHaveBeenCalled();
+  });
+
+    it('should call getEmployeesByBranch on GET /api/v1/employees/branch/:branchId', async () => {
+    await request(app).get('/api/v1/employees/branch/2');
+    expect(employeesController.getEmployeesByBranch).toHaveBeenCalled();
+  });
+
+  it('should call getEmployeesByDepartment on GET /api/v1/employees/department/:department', async () => {
+    await request(app).get('/api/v1/employees/department/IT');
+    expect(employeesController.getEmployeesByDepartment).toHaveBeenCalled();
   });
 });
