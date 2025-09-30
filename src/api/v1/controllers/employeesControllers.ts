@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as employeeService from "../../services/employeeService";
+import * as employeeService from "../services/employeeService";
 
 
 // Create a new employee
