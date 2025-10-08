@@ -8,6 +8,8 @@ import {
   getEmployeesByBranch,
   getEmployeesByDepartment,
 } from "../controllers/employeesControllers";
+import { validateRequest } from '../middleware/validate';
+import { employeeSchemas } from '../validation/employeeValidation';
 
 const router = express.Router();
 
@@ -15,9 +17,13 @@ router.get('/branch/:branchId', getEmployeesByBranch);
 router.get('/department/:department', getEmployeesByDepartment);
 
 
-router.post('/', createEmployee);
+router.post('/', 
+  validateRequest(employeeSchemas.create),
+  createEmployee);
 router.get('/', getAllEmployees);
-router.get('/:id', getEmployeeById);
+router.get('/:id', 
+  validateRequest(employeeSchemas.getById),
+  getEmployeeById);
 router.put('/:id', updateEmployee);
 router.delete('/:id', deleteEmployee);
 
