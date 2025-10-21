@@ -35,6 +35,18 @@ export const employeeSchemas = {
         }),
     },
 
+    // GET /employees - Get all employees
+    getAll: {
+        query: Joi.object({ 
+            limit: Joi.number().optional().min(1).messages({
+                "number.min": "Limit must be at least 1",
+            }),
+            offset: Joi.number().optional().min(0).messages({
+                "number.min": "Offset cannot be negative",
+            }),
+        }), 
+    },
+
     // GET /employees/:id - Get single employee by ID
     getById: {
         params: Joi.object({

@@ -20,11 +20,17 @@ router.get('/department/:department', getEmployeesByDepartment);
 router.post('/', 
   validateRequest(employeeSchemas.create),
   createEmployee);
-router.get('/', getAllEmployees);
+router.get('/', 
+  validateRequest(employeeSchemas.getAll),
+  getAllEmployees);
 router.get('/:id', 
   validateRequest(employeeSchemas.getById),
   getEmployeeById);
-router.put('/:id', updateEmployee);
-router.delete('/:id', deleteEmployee);
+router.put('/:id', 
+  validateRequest(employeeSchemas.update),
+  updateEmployee);
+router.delete('/:id', 
+  validateRequest(employeeSchemas.delete),
+  deleteEmployee);
 
 export default router;
