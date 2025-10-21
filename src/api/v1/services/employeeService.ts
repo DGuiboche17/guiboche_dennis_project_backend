@@ -8,7 +8,7 @@ import {
 } from "../repositories/firestoreRepository";
 
 
-const COLLECTION = "Employees";
+const COLLECTION = "employees";
 
 /**
  * Retrieves all Employees from Firestore
@@ -75,7 +75,6 @@ export const getEmployeeById = async (id: string): Promise<Employee> => {
 
         const data = doc.data();
         const Employee: Employee = {
-            id: doc.id,
             ...data,
             createdAt: data?.createdAt?.toDate() || new Date(),
             updatedAt: data?.updatedAt?.toDate() || new Date(),

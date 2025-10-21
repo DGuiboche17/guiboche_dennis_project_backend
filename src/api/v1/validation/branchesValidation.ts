@@ -10,9 +10,9 @@ export const branchesSchemas = {
                 "any.required": "Branch name is required",
                 "string.empty": "Branch name cannot be empty",  
             }),
-            address: Joi.string().required().messages({
-                "any.required": "Address is required",
-                "string.empty": "Address cannot be empty",  
+            location: Joi.string().required().messages({
+                "any.required": "location is required",
+                "string.empty": "location cannot be empty",
             }),
             phone: Joi.string().required().messages({
                 "any.required": "Phone number is required",
@@ -53,8 +53,8 @@ export const branchesSchemas = {
             name: Joi.string().optional().messages({
                 "string.empty": "Branch name cannot be empty",  
             }),
-            address: Joi.string().optional().messages({
-                "string.empty": "Address cannot be empty",  
+            location: Joi.string().optional().messages({
+                "string.empty": "location cannot be empty",  
             }),
             phone: Joi.string().optional().messages({
                 "string.empty": "Phone number cannot be empty",  

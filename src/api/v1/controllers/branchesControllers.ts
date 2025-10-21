@@ -60,8 +60,8 @@ export const createBranch = async (
 ): Promise<void> => {
     try {
         // Extract validated data from request body
-        const { name, address, phone } = req.body;
-        const branchData = { name, address, phone };
+        const { name, location, phone } = req.body;
+        const branchData = { name, location, phone };
 
         const newBranch: Branch = await BranchesService.createBranch(branchData);
         res.status(HTTP_STATUS.CREATED).json(
@@ -85,10 +85,10 @@ export const updateBranch = async (
 ): Promise<void> => {
     try {
         const id = req.params.id
-        const { name, address, phone } = req.body;
+        const { name, location, phone } = req.body;
 
         // Create update data object with only the fields that can be updated
-        const updateData = { name, address, phone };
+        const updateData = { name, location, phone };
 
         const updatedBranch = await BranchesService.updateBranch(id, updateData);
         res.status(HTTP_STATUS.OK).json(

@@ -38,7 +38,7 @@ export const getAllBranches = async (): Promise<Branch[]> => {
  */
 export const createBranch = async (BranchData: {
     name: string;
-    address: string;
+    location: string;
     phone: string;
 }): Promise<Branch> => {
     try {
@@ -71,7 +71,6 @@ export const getBranchById = async (id: string): Promise<Branch> => {
 
         const data = doc.data();
         const branch: Branch = {
-            id: doc.id,
             ...data,
             createdAt: data?.createdAt?.toDate() || new Date(),
             updatedAt: data?.updatedAt?.toDate() || new Date(),
@@ -92,7 +91,7 @@ export const getBranchById = async (id: string): Promise<Branch> => {
  */
 export const updateBranch = async (
     id: string,
-    branchData: Pick<Branch, "name" | "address" | "phone">
+    branchData: Pick<Branch, "name" | "location" | "phone">
 ): Promise<Branch> => {
     try {
         const updateData = {
