@@ -5,17 +5,12 @@ import {
   getEmployeeById,
   updateEmployee,
   deleteEmployee,
-  getEmployeesByBranch,
-  getEmployeesByDepartment,
+
 } from "../controllers/employeesControllers";
 import { validateRequest } from '../middleware/validate';
 import { employeeSchemas } from '../validation/employeeValidation';
 
 const router = express.Router();
-
-router.get('/branch/:branchId', getEmployeesByBranch);
-router.get('/department/:department', getEmployeesByDepartment);
-
 
 router.post('/', 
   validateRequest(employeeSchemas.create),

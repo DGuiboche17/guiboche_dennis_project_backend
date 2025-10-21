@@ -1,73 +1,134 @@
-//  Service layer for managing employees.
-//  Provides functions that will create read, update and delete employees
+import { Employee } from "../models/employeesModel";
+import {
+    createDocument,
+    getDocuments,
+    getDocumentById,
+    updateDocument,
+    deleteDocument,
+} from "../repositories/firestoreRepository";
 
-import { Employee, employees, } from "../../../data/employees";
 
-// Get all employees
-export const getAllEmployees = (): Employee[] => {
-    return employees;
-}
+const COLLECTION = "Employees";
 
-// Get an employee by ID
-export const getEmployeeById = (id: number): Employee | undefined => {
-    return employees.find(emp => emp.id === id);
-}       
-
-// Create a new employee
-export const createEmployee = (data: {
-    name: string;
-    position: string;
-    department: string; 
-    email: string;
-    phone: string;
-    branchId: number;
-}): Employee => {
-    const newEmployee: Employee = {
-        id: employees.length > 0 ? employees[employees.length - 1].id + 1 : 1,
-        /// ... will copy the contents of data into newEmployee
-        ...data
-    };
-    employees.push(newEmployee);
-    return newEmployee;
-}
-// array isnt further used, its saved in memory only.
-
-// Update an existing employee
-export const updateEmployee = (id: number, data: {
-    name?: string;
-    position?: string;
-    department?: string;   
-    email?: string;
-    phone?: string;
-    branchId?: number;    
-} ): Employee | undefined => {
-    const employee = employees.find(emp => emp.id === id);
-    if (!employee) {
-        return undefined;
+/**
+ * Retrieves all Employees from Firestore
+ * @returns Array of all Employees
+ */
+export const getAllEmployees = async (): Promise<Employee[]> => {
+    try {
+        const snapshot = await getDocuments(COLLECTION);
+        const Employees: Employee[] = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt?.toDate() || new Date(),
+                updatedAt: data.updatedAt?.toDate() || new Date(),
+            } as Employee;
+        });
+        return Employees;
+    } catch (error) {
+        throw error;
     }
-    Object.assign(employee, data);
-    return employee;
-}
-
-// Delete an employee
-export const deleteEmployee = (id: number): boolean => {
-    const index = employees.findIndex(emp => emp.id === id);
-    if (index === -1) {
-        return false;
-    }
-    // splice will remove the item at the index position
-    employees.splice(index, 1);
-    return true;
-}
-
-// get employees by branch ID
-export const getEmployeesByBranch = (branchId: number): Employee[] => {
-  return employees.filter(emp => emp.branchId === branchId);
 };
 
-// get employees by department
-export const getEmployeesByDepartment = (department: string): Employee[] => {
-  return employees.filter(emp =>
-    emp.department.toLowerCase() === department.toLowerCase()
-  );
+/**
+ * Creates a new Employee in Firestore
+ * @param EmployeeData - The data for the new Employee
+ * @returns The created Employee with generated ID
+ */
+export const createEmployee = async (EmployeeData: {
+    name: string;
+    position: string;
+    department: string;
+    email: string;
+    phone: string;
+    branchId: number
+}): Promise<Employee> => {
+    try {
+        const now = new Date();
+        const newEmployeeData = {
+            ...EmployeeData,
+            createdAt: now,
+            updatedAt: now,
+        };
+
+        const id = await createDocument<Employee>(COLLECTION, newEmployeeData);
+        return { id, ...newEmployeeData } as Employee;
+    } catch (error) {
+        throw error;
+    }
+};
+
+/**
+ * Retrieves a single Employee by ID from Firestore
+ * @param id - The ID of the Employee to retrieve
+ * @returns The Employee if found
+ * @throws Error if Employee not found
+ */
+export const getEmployeeById = async (id: string): Promise<Employee> => {
+    try {
+        const doc = await getDocumentById(COLLECTION, id);
+        if (!doc) {
+            throw new Error(`Employee with ID ${id} not found`);
+        }
+
+        const data = doc.data();
+        const Employee: Employee = {
+            id: doc.id,
+            ...data,
+            createdAt: data?.createdAt?.toDate() || new Date(),
+            updatedAt: data?.updatedAt?.toDate() || new Date(),
+        } as Employee;
+
+        return Employee;
+    } catch (error) {
+        throw error;
+    }
+};
+
+/**
+ * Updates an existing Employee in Firestore
+ * @param id - The ID of the Employee to update
+ * @param EmployeeData - The fields to update
+ * @returns The updated Employee
+ * @throws Error if Employee not found
+ */
+export const updateEmployee = async (
+    id: string,
+    EmployeeData: Pick<Employee, "name" | "position" | "department" | "email" | "phone" | "branchId">
+): Promise<Employee> => {
+    try {
+        const updateData = {
+            ...EmployeeData,
+            updatedAt: new Date(),
+        };
+
+        await updateDocument<Employee>(COLLECTION, id, updateData);
+
+        // Return the updated Employee
+        const updatedEmployee = await getEmployeeById(id);
+        return updatedEmployee;
+    } catch (error) {
+        throw error;
+    }
+};
+
+/**
+ * Deletes an Employee from Firestore
+ * @param id - The ID of the Employee to delete
+ * @throws Error if Employee not found
+ */
+export const deleteEmployee = async (id: string): Promise<void> => {
+    try {
+        // Check if Employee exists before deleting
+        const doc = await getDocumentById(COLLECTION, id);
+        if (!doc) {
+            throw new Error(`Employee with ID ${id} not found`);
+        }
+
+        await deleteDocument(COLLECTION, id);
+    } catch (error) {
+        throw error;
+    }
 };
