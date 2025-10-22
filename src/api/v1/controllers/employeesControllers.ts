@@ -60,8 +60,8 @@ export const createEmployee = async (
 ): Promise<void> => {
     try {
         // Extract validated data from request body
-        const { name, position, department, email, phone, branchId } = req.body;
-        const EmployeeData = { name, position, department, email, phone, branchId };
+        const { name, position, email, branchId } = req.body;
+        const EmployeeData = { name, position, email, branchId };
 
         const newEmployee: Employee = await EmployeeService.createEmployee(EmployeeData);
         res.status(HTTP_STATUS.CREATED).json(
@@ -85,10 +85,10 @@ export const updateEmployee = async (
 ): Promise<void> => {
     try {
         const { id } = req.params;
-        const { name , position, department, email, phone, branchId} = req.body;
+        const { name , position, email, branchId} = req.body;
 
         // Create update data object with only the fields that can be updated
-        const updateData = { name, position, department, email, phone, branchId };
+        const updateData = { name, position, email, branchId };
 
         const updatedEmployee: Employee = await EmployeeService.updateEmployee(id, updateData);
         res.status(HTTP_STATUS.OK).json(

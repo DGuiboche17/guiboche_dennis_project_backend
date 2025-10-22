@@ -14,9 +14,7 @@ describe("Employee Service", () => {
         const mockEmployeeData = {
             name: "Dennis Test",
             position: "IT position",
-            department: "Chilling department",
             email: "Dgui@hotmail.com",
-            phone: "123-456-7890",
             branchId: 1
 
         };
@@ -35,9 +33,7 @@ describe("Employee Service", () => {
             expect.objectContaining({
                 name: mockEmployeeData.name,
                 position: mockEmployeeData.position,
-                department: mockEmployeeData.department,
                 email: mockEmployeeData.email,
-                phone: mockEmployeeData.phone,
                 branchId: mockEmployeeData.branchId,
                 createdAt: expect.any(Date),
                 updatedAt: expect.any(Date),

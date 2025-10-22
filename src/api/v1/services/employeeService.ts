@@ -40,9 +40,7 @@ export const getAllEmployees = async (): Promise<Employee[]> => {
 export const createEmployee = async (EmployeeData: {
     name: string;
     position: string;
-    department: string;
     email: string;
-    phone: string;
     branchId: number
 }): Promise<Employee> => {
     try {
@@ -95,7 +93,7 @@ export const getEmployeeById = async (id: string): Promise<Employee> => {
  */
 export const updateEmployee = async (
     id: string,
-    EmployeeData: Pick<Employee, "name" | "position" | "department" | "email" | "phone" | "branchId">
+    EmployeeData: Pick<Employee, "name" | "position" | "email" | "branchId">
 ): Promise<Employee> => {
     try {
         const updateData = {

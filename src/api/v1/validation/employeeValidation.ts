@@ -13,6 +13,7 @@ export const employeeSchemas = {
                 "any.required": "Position is required",
                 "string.empty": "Position cannot be empty",
             }),
+
             email: Joi.string().email().required().messages({
                 "any.required": "email is required",
                 "string.empty": "email cannot be empty",

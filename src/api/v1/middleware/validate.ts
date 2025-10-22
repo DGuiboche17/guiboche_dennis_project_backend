@@ -80,22 +80,38 @@ export const validateRequest = (
                 );
             }
 
-            if (schemas.params) {
-                req.params = validatePart(
-                    schemas.params,
-                    req.params,
-                    "Params",
-                    defaultOptions.stripParams
-                );
-            }
+                if (schemas.params) {
+        const validatedParams = validatePart(
+            schemas.params,
+            req.params,
+            "Params",
+            defaultOptions.stripParams
+        );
+        if (defaultOptions.stripParams) {
+            // Only replace params if stripping is enabled
+            Object.keys(req.params).forEach(key => delete req.params[key]);
+            Object.assign(req.params, validatedParams);
+        }
+        // else leave req.params as is (since no stripping or transformation done)
+    }
+
+
+            // Just to remind myself
+            // Body is an aspect of an http request that is sent by a client to the server; this can have data like json, files, etc.
+            // params are when you start to look for specific things like maybe the ID of an item
+            // query is when you start getting down to filtering for example, it starts off with ? and then specifics follow 
+            // like if the item the client wants has certain characters in it, or maybe a set number of characters like 10 (like SQL queries)
+
 
             if (schemas.query) {
-                req.query = validatePart(
+                const validatedQuery = validatePart(
                     schemas.query,
                     req.query,
                     "Query",
                     defaultOptions.stripQuery
                 );
+                Object.keys(req.query).forEach(key => delete req.query[key]);
+                Object.assign(req.query, validatedQuery);
             }
 
             // If there are any validation errors, return them
