@@ -1,115 +1,122 @@
-import { Request, Response } from "express";
-import * as employeeService from "../services/employeeService";
+import { Request, Response, NextFunction } from "express";
+import { HTTP_STATUS } from "../constants/httpConstants";
+import * as EmployeeService from "../services/employeeService";
+import type { Employee } from "../models/employeesModel";
+import { successResponse } from "../models/responseModel";
 
-// Create a new employee
-export const createEmployee = (req: Request, res: Response): void => {
-  const {
-    name,
-    position,
-    department,
-    email,
-    phone,
-    branchId
-  } = req.body;
-
-  if (!name || !position || !department || !email || !phone || branchId === undefined) {
-    res.status(400).json({ message: 'Missing required fields.' });
-    return;
-  }
-
-    const newEmployee = employeeService.createEmployee({
-    name,
-    position,
-    department,
-    email,
-    phone,
-    branchId
-  });
-
-  res.status(201).json({
-    message: 'Employee created successfully.',
-    data: newEmployee
-  });
+/**
+ * Retrieves all Employees
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const getAllEmployees = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const employees: Employee[] = await EmployeeService.getAllEmployees();
+        res.status(HTTP_STATUS.OK).json(
+            successResponse(employees, "Employees retrieved successfully")
+        );
+    } catch (error) {
+        next(error);
+    }
 };
 
-// Get all employees
-export const getAllEmployees = (_req: Request, res: Response): void => {
-  const employees = employeeService.getAllEmployees();
-    res.status(200).json({
-    message: 'Employees retrieved successfully.',
-    data: employees
-  });
-}
-
-// Get an employee by ID
-export const getEmployeeById = (req: Request, res: Response): void => {
-    const id = req.params.id;
-    const employee = employeeService.getEmployeeById(Number(id));
-
-    if (!employee) {
-        res.status(404).json({ message: 'Employee not found.' });
-        return;
+/**
+ * Retrieves a single Employee by ID
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const getEmployeeById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const employee: Employee = await EmployeeService.getEmployeeById(id);
+        res.status(HTTP_STATUS.OK).json(
+            successResponse(employee, "Employee retrieved successfully")
+        );
+    } catch (error) {
+        next(error);
     }
-    res.status(200).json({
-        message: 'Employee retrieved successfully.',
-        data: employee
-    });
-}
-
-// Update an employee
-export const updateEmployee = (req: Request, res: Response): void => {
-    const id = req.params.id; 
-    const employee = employeeService.updateEmployee(Number(id), req.body);
-    if (!employee) {
-        res.status(404).json({ message: 'Employee not found.' });
-        return;
-    }
-    res.status(200).json({
-        message: 'Employee updated successfully.',
-        data: employee
-    });
-}
-
-// Delete an employee
-export const deleteEmployee = (req: Request, res: Response): void => {
-    const id = req.params.id;
-    const successfulDeletion = employeeService.deleteEmployee(Number(id));
-    if (!successfulDeletion) {
-        res.status(404).json({ message: 'Employee not found.' });
-        return;
-    }
-    res.status(200).json({ message: 'Employee deleted successfully.' });
-}   
-
-// Get all employees by branch ID
-export const getEmployeesByBranch = (req: Request, res: Response): void => {
-  const branchId = Number(req.params.branchId);
-
-  if (!branchId) {
-    res.status(400).json({ message: 'Missing or invalid branch ID.' });
-    return;
-  }
-
-  const employees = employeeService.getEmployeesByBranch(branchId);
-  res.status(200).json({
-    message: 'Employees retrieved by branch ID.',
-    data: employees
-  });
 };
 
-// Get all employees by department
-export const getEmployeesByDepartment = (req: Request, res: Response): void => {
-  const department = req.params.department;
+/**
+ * Creates a new Employee
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const createEmployee = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        // Extract validated data from request body
+        const { name, position, email, branchId } = req.body;
+        const EmployeeData = { name, position, email, branchId };
 
-  if (!department) {
-    res.status(400).json({ message: 'Missing department parameter.' });
-    return;
-  }
-
-  const employees = employeeService.getEmployeesByDepartment(department);
-  res.status(200).json({
-    message: 'Employees retrieved by department.',
-    data: employees
-  });
+        const newEmployee: Employee = await EmployeeService.createEmployee(EmployeeData);
+        res.status(HTTP_STATUS.CREATED).json(
+            successResponse(newEmployee, "Employee created successfully")
+        );
+    } catch (error) {
+        next(error);
+    }
 };
 
+/**
+ * Updates an existing Employee
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const updateEmployee = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { name , position, email, branchId} = req.body;
+
+        // Create update data object with only the fields that can be updated
+        const updateData = { name, position, email, branchId };
+
+        const updatedEmployee: Employee = await EmployeeService.updateEmployee(id, updateData);
+        res.status(HTTP_STATUS.OK).json(
+            successResponse(updatedEmployee, "Employee updated successfully")
+        );
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Deletes an Employee
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const deleteEmployee = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const { id } = req.params;
+        await EmployeeService.deleteEmployee(id);
+        res.status(HTTP_STATUS.OK).json(
+            successResponse(null, "Employee deleted successfully")
+        );
+    } catch (error) {
+        next(error);
+    }
+};

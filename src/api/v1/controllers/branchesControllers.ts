@@ -1,67 +1,122 @@
-import { Request, Response } from 'express';
-import { branches, Branch } from '../../../data/branches';
+import { Request, Response, NextFunction } from "express";
+import { HTTP_STATUS } from "../constants/httpConstants";
+import * as BranchesService from "../services/branchesService";
+import { Branch } from "../models/branchesModel";
+import { successResponse } from "../models/responseModel";
 
-// create a new branch
-export const createBranch = (req: Request, res: Response): void => {
-    const { name, address, phone } = req.body;
-    if (!name || !address || !phone) {
-        res.status(400).json({ message: 'Missing required fields.' });
-        return;
+/**
+ * Retrieves all branches
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const getAllBranches = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const branches: Branch[] = await BranchesService.getAllBranches();
+        res.status(HTTP_STATUS.OK).json(
+            successResponse(branches, "Branches retrieved successfully")
+        );
+    } catch (error) {
+        next(error);
     }
-    const newBranch: Branch = {
-        id: branches.length > 0 ? branches[branches.length - 1].id + 1 : 1,
-        name,
-        address,
-        phone
-    };
-    branches.push(newBranch);
-    res.status(201).json({
-        message: 'Branch created successfully.',
-        data: newBranch
-    });
-    
 };
 
-// get all branches
-export const getAllBranches = (_req: Request, res: Response): void => {
-    res.status(200).json({ message: 'Branches retrieved successfully.', data: branches });
-};
-
-// get a branch by ID
-export const getBranchById = (req: Request, res: Response): void => {
-    const id = Number(req.params.id);
-    const branch = branches.find(branch => branch.id === id);
-    if (!branch) {
-        res.status(404).json({ message: 'Branch not found.' });
-        return;
-    }   
-    res.status(200).json({ message: 'Branch retrieved successfully.', data: branch });
-};
-
-// update a branch
-export const updateBranch = (req: Request, res: Response): void => {
-    const id = Number(req.params.id);   
-    const { name, address, phone } = req.body;
-    const branch = branches.find(branch => branch.id === id);
-    if (!branch) {
-        res.status(404).json({ message: 'Branch not found.' });
-        return;
-    }    
-    if (name) branch.name = name;
-    if (address) branch.address = address;
-    if (phone) branch.phone = phone;    
-    res.status(200).json({ message: 'Branch updated successfully.', data: branch });
-};
-
-// delete a branch  
-export const deleteBranch = (req: Request, res: Response): void => {
-    const id = Number(req.params.id);
-    const index = branches.findIndex(branch => branch.id === id);   
-    if (index === -1) {
-        res.status(404).json({ message: 'Branch not found.' });
-        return;
+/**
+ * Retrieves a single branch by ID
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const getBranchById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const id = req.params.id
+        const branch = await BranchesService.getBranchById(id);
+        res.status(HTTP_STATUS.OK).json(
+            successResponse(branch, "Branches retrieved successfully")
+        );
+    } catch (error) {
+        next(error);
     }
-    branches.splice(index, 1);
-    res.status(200).json({ message: 'Branch deleted successfully.' });
-}   
+};
 
+/**
+ * Creates a new branch
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const createBranch = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        // Extract validated data from request body
+        const { name, location, phone } = req.body;
+        const branchData = { name, location, phone };
+
+        const newBranch: Branch = await BranchesService.createBranch(branchData);
+        res.status(HTTP_STATUS.CREATED).json(
+            successResponse(newBranch, "Branches created successfully")
+        );
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Updates an existing branch
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const updateBranch = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const id = req.params.id
+        const { name, location, phone } = req.body;
+
+        // Create update data object with only the fields that can be updated
+        const updateData = { name, location, phone };
+
+        const updatedBranch = await BranchesService.updateBranch(id, updateData);
+        res.status(HTTP_STATUS.OK).json(
+            successResponse(updatedBranch, "Branches updated successfully")
+        );
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Deletes an branch
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ */
+export const deleteBranch = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const id = req.params.id
+        await BranchesService.deleteBranch(id);
+        res.status(HTTP_STATUS.OK).json(
+            successResponse(null, "Branches deleted successfully")
+        );
+    } catch (error) {
+        next(error);
+    }
+};
