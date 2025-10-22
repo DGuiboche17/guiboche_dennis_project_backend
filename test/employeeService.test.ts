@@ -139,36 +139,38 @@ describe("Employee Service", () => {
         expect(result).toMatchObject(mockEmployeeData);
     });
 
-        it("should retrieve all employees successfully", async () => {
-    // Arrange
-    const mockEmployees = [
-        {
-        id: "1",
-        data: () => ({
+
+    // test for getAllEmployees
+    it("should retrieve all employees successfully", async () => {
+        // Arrange
+        const mockEmployees = [
+            {
+            id: "1",
+            data: () => ({
+                name: "Dennis Test",
+                position: "IT position",
+                email: "dgui@gmail.com",
+                branchId: 1,
+            }),
+            },
+        ];
+
+        (firestoreRepository.getDocuments as jest.Mock).mockResolvedValue({ docs: mockEmployees });
+
+        // Act
+        const result = await employeeService.getAllEmployees();
+
+        // Assert
+        expect(firestoreRepository.getDocuments).toHaveBeenCalledWith("employees");
+        expect(result).toMatchObject([
+            {
+            id: "1",
             name: "Dennis Test",
             position: "IT position",
             email: "dgui@gmail.com",
             branchId: 1,
-        }),
-        },
-    ];
-
-    (firestoreRepository.getDocuments as jest.Mock).mockResolvedValue({ docs: mockEmployees });
-
-    // Act
-    const result = await employeeService.getAllEmployees();
-
-    // Assert
-    expect(firestoreRepository.getDocuments).toHaveBeenCalledWith("employees");
-    expect(result).toMatchObject([
-        {
-        id: "1",
-        name: "Dennis Test",
-        position: "IT position",
-        email: "dgui@gmail.com",
-        branchId: 1,
-        },
-    ]);
+            },
+        ]);
     });
 
 });
