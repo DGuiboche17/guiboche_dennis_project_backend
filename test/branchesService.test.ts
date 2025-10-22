@@ -145,20 +145,20 @@ describe("Branches Service", () => {
         // Act actually calls the function we are testing
         const result = await branchesService.updateBranch(branchId, mockUpdateData);
 
-            // Assert
-            expect(firestoreRepository.updateDocument).toHaveBeenCalledWith(
-                "branches",
-                branchId,
-                expect.objectContaining({
-                    name: mockUpdateData.name,
-                    location: mockUpdateData.location,
-                    phone: mockUpdateData.phone,
-                })
-            );
+        // Assert
+        expect(firestoreRepository.updateDocument).toHaveBeenCalledWith(
+            "branches",
+            branchId,
+            expect.objectContaining({
+                name: mockUpdateData.name,
+                location: mockUpdateData.location,
+                phone: mockUpdateData.phone,
+            })
+        );
 
-            // check the final returned result
-            expect(result.name).toBe(mockUpdateData.name);
-            expect(result.location).toBe(mockUpdateData.location);
-            expect(result.phone).toBe(mockUpdateData.phone);
-        });
+        // check the final returned result
+        expect(result.name).toBe(mockUpdateData.name);
+        expect(result.location).toBe(mockUpdateData.location);
+        expect(result.phone).toBe(mockUpdateData.phone);
     });
+});
